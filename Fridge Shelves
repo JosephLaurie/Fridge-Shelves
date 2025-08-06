@@ -53,4 +53,5 @@ plt.plot([head_pos,head_pos], vertical_lines[0], 'k')
 plt.plot(x_circ, y_circ[0]*np.ones(len(y_circ)))
 
 plt.plot()
+
 plt.show()
