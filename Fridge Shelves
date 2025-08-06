@@ -24,12 +24,14 @@ h_door = 72 + h_base
 d_doorshelf = -1
 h_doorshelf = 8.5 + h_base
 d_shelf = -38
-# no_shelves = np.random.randint(2,5)
+no_shelves = np.random.randint(2,5)
 h_shelf = np.array([0, (h_door - h_base)*0.8, (h_door - h_base)*0.4,
                     (h_door - h_base)*0.2, (h_door - h_base)*0.7,
                     h_door-h_base]) + h_base
-# h_shelf = np.random.randint(1,99,no_shelves)*0.01*(h_door - h_base) + h_base
-h_person = 157.4
+h_shelf = np.array([h_base, h_door])
+h_shelf = np.insert(h_shelf, 1, (np.random.randint(1,99,no_shelves)*0.01*(h_door - h_base) + h_base))
+h_shelf
+h_person = np.random.randint(150,185)
 w_person = 46
 l_arm = 46
 
@@ -87,4 +89,6 @@ plt.xlim(head_pos-10, 10)
 plt.xlabel('Distance from back of fridge, cm')
 plt.ylabel('Height, cm')
 plt.show()
+
+
 plt.show()
