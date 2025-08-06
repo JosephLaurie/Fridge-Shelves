@@ -1,0 +1,56 @@
+import numpy as np
+import matplotlib.pyplot as plt
+''' AIMS:
+    Create an engine to simulate view into fridge shelves and calculate depth
+    of field of view into each shelf.
+    
+    Engine should be able to modify:
+        number of shelves [no_shelves]
+        height of shelves [h_shelf]
+        height of person [h_person]
+    
+    The engine should provide results that measure the depth of field of view
+    into each shelf. Results could be shown as a 3d input giving a colour field
+    output in cartesian 3d. Output could be average depth or some other
+    function of depths.
+    
+    I assume the distance from the fridge [d_fridge] will be modified by the
+    h_person and the arm length [l_arm] and the door width [w_door]'''
+
+'''Variables of input'''
+w_door = 48
+h_door = 72
+d_doorshelf = -1
+h_doorshelf = 8.5
+d_shelf = -38
+no_shelves = 100
+h_shelf = h_door*0.5
+h_person = 174 - 98
+w_person = 46
+l_arm = 46
+
+
+'''graph variables'''
+r_head = 9
+head_pos = -l_arm + d_doorshelf + d_shelf - (l_arm**2 - w_person**2)**0.5
+#head_pos is the distance from the eye to the fridge back
+
+'''making diagram'''
+#lines
+horizontal_lines = np.array([[0, d_shelf], [0, d_shelf + d_doorshelf]])
+vertical_lines = np.array([[0, h_person - r_head], [0, h_door]])
+x_circ = -1*np.linspace(-1,1,101)*r_head-head_pos
+y_circ = h_person - r_head + np.sqrt(np.abs(r_head**2-(x_circ-head_pos)**2)) #this doesn't work
+#horizontal plots
+# plt.plot(horizontal_lines[1], [0,0], 'b')
+# plt.plot(horizontal_lines[1], [h_door,h_door], 'b')
+# plt.plot(horizontal_lines[0], [h_shelf,h_shelf], 'b')
+#vertical plots
+# plt.plot([0,0], vertical_lines[1], 'b')
+plt.plot([head_pos,head_pos], vertical_lines[0], 'k')
+
+#other plots
+plt.plot(x_circ, y_circ[0]*np.ones(len(y_circ)))
+
+plt.plot()
+plt.show()
