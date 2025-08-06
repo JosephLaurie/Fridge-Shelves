@@ -24,9 +24,12 @@ h_door = 72 + h_base
 d_doorshelf = -1
 h_doorshelf = 8.5 + h_base
 d_shelf = -38
-no_shelves = 100
-h_shelf = np.array([(h_door - h_base)*0.2, (h_door - h_base)*0.1]) + h_base
-h_person = 174
+# no_shelves = np.random.randint(2,5)
+h_shelf = np.array([0, (h_door - h_base)*0.8, (h_door - h_base)*0.4,
+                    (h_door - h_base)*0.2, (h_door - h_base)*0.7,
+                    h_door-h_base]) + h_base
+# h_shelf = np.random.randint(1,99,no_shelves)*0.01*(h_door - h_base) + h_base
+h_person = 157.4
 w_person = 46
 l_arm = 46
 
@@ -50,7 +53,7 @@ y_circ_neg = h_person - r_head - np.sqrt(np.abs(r_head**2-(x_circ-head_pos)**2))
 #horizontal plots
 plt.plot(horizontal_lines[1], [h_base, h_base], 'b')
 plt.plot(horizontal_lines[1], [h_door, h_door], 'b')
-for i in range(0,np.size(h_shelf)):
+for i in range(1,np.size(h_shelf)-1):
     plt.plot(horizontal_lines[0], [h_shelf[i], h_shelf[i]], 'b')
 #vertical plots
 plt.plot([0,0], vertical_lines[1], 'b')
@@ -61,22 +64,27 @@ plt.plot(x_circ, y_circ*np.ones(len(y_circ)), 'k')
 plt.plot(x_circ, y_circ_neg*np.ones(len(y_circ)), 'k')
 
 '''making view lines'''
-for i in range(0,np.size(h_shelf)):
-    gradient = (h_shelf[i] - h_person + r_head) / (d_shelf - head_pos - r_head)
-    
-
-
-gradients = (h_shelf - h_person + r_head) / (d_shelf - head_pos - r_head)
+gradients = (h_shelf[1:-1] - h_person + r_head) / (d_shelf - head_pos - r_head)
 y_intercepts = h_person - r_head - gradients*(head_pos + r_head)
-shelf_x_intercepts = (np.append(np.array([h_base]), h_shelf[:-1]) - y_intercepts)/gradients
+shelf_x_intercepts = (h_shelf[:-2] - y_intercepts)/gradients
+#check for shelves above user
+mask = np.where(shelf_x_intercepts < d_shelf)
+shelf_x_intercepts2 = (h_shelf[2:] - y_intercepts)/gradients
+shelf_x_intercepts[mask] = shelf_x_intercepts2[mask]
+
+
 print('gradients = ', gradients, 'y_intercepts = ', y_intercepts,
       '\nshelf_x_intercepts = ', shelf_x_intercepts)
 shelf_x_intercepts[shelf_x_intercepts > 0] = 0
-for i in range(0,np.size(h_shelf)):
-    plt.plot([head_pos + r_head, d_shelf], [h_person - r_head, h_shelf[i]], 'r--')
+for i in range(0,np.size(h_shelf)-2):
+    plt.plot([head_pos + r_head, d_shelf], [h_person - r_head, h_shelf[i+1]], 'r--')
     plt.plot([head_pos + r_head, shelf_x_intercepts[i]],
              [h_person - r_head, gradients[i]*shelf_x_intercepts[i] + y_intercepts[i]], 'g--')
 
 plt.gca().set_aspect('equal', adjustable='box')
 plt.ylim(h_base-10, h_door + 10)
+plt.xlim(head_pos-10, 10)
+plt.xlabel('Distance from back of fridge, cm')
+plt.ylabel('Height, cm')
+plt.show()
 plt.show()
