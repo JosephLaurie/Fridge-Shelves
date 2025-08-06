@@ -18,40 +18,56 @@ import matplotlib.pyplot as plt
     h_person and the arm length [l_arm] and the door width [w_door]'''
 
 '''Variables of input'''
+h_base = 98
 w_door = 48
-h_door = 72
+h_door = 72 + h_base
 d_doorshelf = -1
-h_doorshelf = 8.5
+h_doorshelf = 8.5 + h_base
 d_shelf = -38
 no_shelves = 100
-h_shelf = h_door*0.5
-h_person = 174 - 98
+h_shelf = np.array([0, (h_door - h_base)*0.6]) + h_base
+h_person = 174
 w_person = 46
 l_arm = 46
 
-
 '''graph variables'''
 r_head = 9
-head_pos = -l_arm + d_doorshelf + d_shelf - (l_arm**2 - w_person**2)**0.5
+head_pos = d_doorshelf + d_shelf - (l_arm**2 - w_person**2*0.25)**0.5
 #head_pos is the distance from the eye to the fridge back
 
-'''making diagram'''
+'''making base diagram'''
 #lines
+#horizontal_lines 0 is the shelf, 1 is the frame
 horizontal_lines = np.array([[0, d_shelf], [0, d_shelf + d_doorshelf]])
-vertical_lines = np.array([[0, h_person - r_head], [0, h_door]])
-x_circ = -1*np.linspace(-1,1,101)*r_head-head_pos
-y_circ = h_person - r_head + np.sqrt(np.abs(r_head**2-(x_circ-head_pos)**2)) #this doesn't work
+#vertical_lines 0 is the person body, 1 is the frame
+vertical_lines = np.array([[0, h_person - 2 * r_head], [h_base, h_door]])
+x_circ = -1*np.linspace(-1,1,101)*r_head + head_pos
+y_circ = h_person - r_head + np.sqrt(np.abs(r_head**2-(x_circ-head_pos)**2))
+y_circ_neg = h_person - r_head - np.sqrt(np.abs(r_head**2-(x_circ-head_pos)**2))
 #horizontal plots
-# plt.plot(horizontal_lines[1], [0,0], 'b')
-# plt.plot(horizontal_lines[1], [h_door,h_door], 'b')
-# plt.plot(horizontal_lines[0], [h_shelf,h_shelf], 'b')
+plt.plot(horizontal_lines[1], [h_base, h_base], 'b')
+plt.plot(horizontal_lines[1], [h_door, h_door], 'b')
+plt.plot(horizontal_lines[0], [h_shelf[1], h_shelf[1]], 'b')
 #vertical plots
-# plt.plot([0,0], vertical_lines[1], 'b')
+plt.plot([0,0], vertical_lines[1], 'b')
 plt.plot([head_pos,head_pos], vertical_lines[0], 'k')
 
 #other plots
-plt.plot(x_circ, y_circ[0]*np.ones(len(y_circ)))
+plt.plot(x_circ, y_circ*np.ones(len(y_circ)), 'k')
+plt.plot(x_circ, y_circ_neg*np.ones(len(y_circ)), 'k')
 
-plt.plot()
+'''making view lines'''
+gradient = (h_shelf[1:] - h_person + r_head) / (d_shelf - head_pos - r_head)
+y_intercept = h_person - r_head - gradient*(head_pos + r_head)
+shelf_x_intercept = (h_shelf - y_intercept)/gradient
+shelf_x_intercept[shelf_x_intercept > 0] = 0
+print('gradient = ', gradient, 'y_intercept = ', y_intercept,
+      '\nshelf_x_intercept = ', shelf_x_intercept)
+for i in range(0,np.size(h_shelf)-1):
+    plt.plot([head_pos + r_head, d_shelf], [h_person - r_head, h_shelf[i+1]], 'r--')
+    plt.plot([head_pos + r_head, shelf_x_intercept[i]],
+             [h_person - r_head, gradient[i]*shelf_x_intercept[i] + y_intercept], 'g--')
 
+plt.gca().set_aspect('equal', adjustable='box')
+plt.ylim(h_base-10, h_door + 10)
 plt.show()
